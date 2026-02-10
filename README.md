@@ -1,18 +1,18 @@
-# PicoBoot
+# MimiBoot
 
 **A minimal second-stage bootloader for ARM Cortex-M microcontrollers.**
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐
 │                                                                            │
-│   Silicon ROM  ───►  PicoBoot  ───►  Payload                               │
+│   Silicon ROM  ───►  MimiBoot  ───►  Payload                               │
 │                          │                                                 │
 │                          └── loads image, hands off, vanishes              │
 │                                                                            │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 
-PicoBoot lives in internal flash. It loads ELF images from external storage into RAM, transfers execution to them, and gets out of the way. The payload runs with full ownership of system resources — it doesn't know or care that PicoBoot exists.
+MimiBoot lives in internal flash. It loads ELF images from external storage into RAM, transfers execution to them, and gets out of the way. The payload runs with full ownership of system resources — it doesn't know or care that MimiBoot exists.
 
 Think GRUB, but for microcontrollers.
 
@@ -20,9 +20,9 @@ Think GRUB, but for microcontrollers.
 
 ## Why
 
-Flashing firmware to an MCU is slow, wears out flash, and requires tooling. PicoBoot inverts this:
+Flashing firmware to an MCU is slow, wears out flash, and requires tooling. MimiBoot inverts this:
 
-- Flash PicoBoot once
+- Flash MimiBoot once
 - Store firmware images on external storage (SD card, SPI flash, etc.)
 - Swap, update, or roll back images by copying files
 - Develop without a programmer in the loop
@@ -35,9 +35,9 @@ Your 2MB SD card becomes a firmware library. Your 16KB of internal flash becomes
 
 MCUboot exists. It's mature, secure, well-tested, and backed by the Zephyr project. If you're deploying production firmware with signed images, secure boot chains, and established RTOSes — use MCUboot. Seriously.
 
-PicoBoot is not that.
+MimiBoot is not that.
 
-| MCUboot | PicoBoot |
+| MCUboot | MimiBoot |
 |---------|----------|
 | Secure boot, image signing, encryption | None of that |
 | Designed for Zephyr, MyNewt, established ecosystems | Designed for whatever ELF you throw at it |
@@ -45,11 +45,11 @@ PicoBoot is not that.
 | Opinionated image format | Standard ELF, nothing proprietary |
 | Tight RTOS integration | Zero runtime integration |
 
-PicoBoot exists for a different purpose: loading *arbitrary* code with *zero assumptions* about what that code is. Your custom kernel. Your weird experimental RTOS. Your bare-metal sensor logger. Your Picomimi build. Whatever.
+MimiBoot exists for a different purpose: loading *arbitrary* code with *zero assumptions* about what that code is. Your custom kernel. Your weird experimental RTOS. Your bare-metal sensor logger. Your Picomimi build. Whatever.
 
 It's a dumb loader. It reads an ELF, copies it to RAM, jumps to it. No verification, no signature checks, no rollback protection, no cryptographic anything. If you need security, this is not your tool.
 
-But if you need a simple, transparent way to boot custom payloads from external storage on Cortex-M — without buying into an ecosystem, without conforming to someone else's image format, without Zephyr dependencies — PicoBoot does exactly that and nothing more.
+But if you need a simple, transparent way to boot custom payloads from external storage on Cortex-M — without buying into an ecosystem, without conforming to someone else's image format, without Zephyr dependencies — MimiBoot does exactly that and nothing more.
 
 It's not better than MCUboot. It's different. It's for tinkerers, not production.
 
@@ -65,7 +65,7 @@ It's not better than MCUboot. It's different. It's for tinkerers, not production
 6. Jumps to the payload entry point
 7. Never executes again until the next reset
 
-After handoff, PicoBoot is dormant code. The payload owns everything.
+After handoff, MimiBoot is dormant code. The payload owns everything.
 
 ---
 
@@ -91,9 +91,9 @@ Try out experimental firmware without touching your stable build. Just boot a di
 
 ---
 
-## Supported Targets (Fucky Wucky Alpha builds UwU)
+## Supported Targets
 
-PicoBoot is designed for ARM Cortex-M devices. Initial targets:
+MimiBoot is designed for ARM Cortex-M devices. Initial targets:
 
 | Family | Specific Chips | RAM | Notes |
 |--------|----------------|-----|-------|
@@ -118,11 +118,11 @@ No dynamic linking, no shared libraries. Payloads must be complete, standalone e
 SD card initialization and image loading adds 100-400ms to boot time. Not suitable for latency-critical cold boot requirements.
 
 **No runtime services**  
-PicoBoot provides nothing after handoff. No callbacks, no shared drivers, no IPC. It's gone.
+MimiBoot provides nothing after handoff. No callbacks, no shared drivers, no IPC. It's gone.
 
 ---
 
-## Documentation (Coming soon... Me dumb)
+## Documentation
 
 | Document | Description |
 |----------|-------------|
@@ -139,7 +139,7 @@ PicoBoot provides nothing after handoff. No callbacks, no shared drivers, no IPC
 ## Project Structure
 
 ```
-picoboot/
+mimiboot/
 ├── src/                    # Core bootloader source
 │   ├── elf/                # ELF parsing and loading
 │   ├── handoff/            # Handoff construction and jump
@@ -151,7 +151,7 @@ picoboot/
 │       ├── stm32f4/
 │       └── ...
 ├── include/                # Public headers
-│   └── picoboot/
+│   └── mimiboot/
 │       └── handoff.h       # Handoff structure (for payloads)
 ├── linker/                 # Linker scripts per target
 ├── docs/                   # Documentation
@@ -173,13 +173,13 @@ cmake -DTARGET=rp2040 ..
 make
 ```
 
-Output: `picoboot.uf2` (or `.bin`/`.hex` depending on target)
+Output: `mimiboot.uf2` (or `.bin`/`.hex` depending on target)
 
 ---
 
 ## Quick Start
 
-1. Flash PicoBoot to your MCU's internal flash
+1. Flash MimiBoot to your MCU's internal flash
 2. Format an SD card as FAT32
 3. Copy your payload ELF to the SD card as `boot.elf`
 4. Insert SD card, reset MCU
@@ -204,7 +204,7 @@ See [docs/payload_guide.md](docs/payload_guide.md) for linker script templates a
 
 ## Handoff
 
-PicoBoot passes a handoff structure to the payload containing:
+MimiBoot passes a handoff structure to the payload containing:
 
 - Memory map (RAM base, size, regions)
 - Clock configuration
