@@ -20,14 +20,25 @@ Think GRUB, but for microcontrollers.
 
 ## Why
 
-Flashing firmware to an MCU is slow, wears out flash, and requires tooling. MimiBoot inverts this:
+Established embedded workflows assume you have infrastructure: flash programmers, debug probes, CI pipelines, OTA backends. The tooling exists, but it's either vendor-locked, ecosystem-specific, or designed for production deployments.
 
-- Flash MimiBoot once
-- Store firmware images on external storage (SD card, SPI flash, etc.)
-- Swap, update, or roll back images by copying files
-- Develop without a programmer in the loop
+For hobbyists and independent developers, this creates friction. You want to:
 
-Your 2MB SD card becomes a firmware library. Your 16KB of internal flash becomes a permanent bootloader. Your iteration speed goes up. Your flash wear goes down.
+- Iterate without reflashing internal memory every time
+- Store multiple firmware builds and swap between them
+- Experiment with custom RTOSes, bare-metal projects, or weird one-off builds
+- Have basic A/B update capability without enterprise infrastructure
+- Develop on hardware without a programmer constantly attached
+
+Existing solutions don't fit well. MCUboot assumes Zephyr or MyNewt. Vendor bootloaders are opaque and limited. U-Boot targets application processors with MMUs. Everything expects you to fit into an existing ecosystem.
+
+MimiBoot is the missing piece: a simple, dumb loader that reads ELF files from storage and boots them. No signing, no encryption, no ecosystem. Just your binary on an SD card.
+
+It's for hobbyists, students, tinkerers, and anyone whose development workflow is "build, copy to SD, reset, repeat."
+
+---
+
+## What It Does
 
 ---
 
@@ -122,7 +133,7 @@ MimiBoot provides nothing after handoff. No callbacks, no shared drivers, no IPC
 
 ---
 
-## Documentation
+## Documentation (Coming Soon OwO)
 
 | Document | Description |
 |----------|-------------|
