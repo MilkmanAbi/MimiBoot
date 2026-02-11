@@ -20,6 +20,8 @@ Think GRUB, but for microcontrollers.
 
 ## Why
 
+Because I am retarded.
+
 Established embedded workflows assume you have infrastructure: flash programmers, debug probes, CI pipelines, OTA backends. The tooling exists, but it's either vendor-locked, ecosystem-specific, or designed for production deployments.
 
 For hobbyists and independent developers, this creates friction. You want to:
